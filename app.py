@@ -1,54 +1,118 @@
 import streamlit as st
 from deep_translator import GoogleTranslator
 
-# Page config - SIMPLE
+# Page config
 st.set_page_config(
     page_title="Language Translator",
     page_icon="🌍",
     layout="centered"
 )
 
-# Get ACTUAL supported languages from the library
-try:
-    # Use the actual supported languages from GoogleTranslator
-    SUPPORTED_LANGUAGES = GoogleTranslator().get_supported_languages(as_dict=True)
-    # Convert to proper format: {'English': 'en', 'Spanish': 'es', ...}
-    LANGUAGES = {v.title(): k for k, v in SUPPORTED_LANGUAGES.items()}
-    LANGUAGES = dict(sorted(LANGUAGES.items()))
-except:
-    # Fallback to most common languages if there's an error
-    LANGUAGES = {
-        'English': 'en',
-        'Spanish': 'es',
-        'French': 'fr',
-        'German': 'de',
-        'Italian': 'it',
-        'Portuguese': 'pt',
-        'Russian': 'ru',
-        'Japanese': 'ja',
-        'Korean': 'ko',
-        'Chinese': 'zh-cn',
-        'Arabic': 'ar',
-        'Hindi': 'hi',
-        'Turkish': 'tr',
-        'Dutch': 'nl',
-        'Greek': 'el',
-        'Hebrew': 'he',
-        'Swedish': 'sv',
-        'Polish': 'pl',
-        'Vietnamese': 'vi',
-        'Thai': 'th'
+# Add BLUE theme CSS
+st.markdown("""
+<style>
+    /* Blue theme */
+    .stApp {
+        background-color: #f8fafc;
     }
+    
+    /* Blue headers */
+    h1, h2, h3 {
+        color: #1e40af;
+    }
+    
+    /* Blue buttons */
+    .stButton > button {
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.5rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .stButton > button:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+    
+    /* Blue text areas */
+    .stTextArea textarea {
+        border: 2px solid #dbeafe;
+        border-radius: 10px;
+        background-color: #f8fafc;
+    }
+    
+    .stTextArea textarea:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+    }
+    
+    /* Blue select box */
+    div[data-baseweb="select"] {
+        border-radius: 10px;
+        border: 2px solid #dbeafe;
+    }
+    
+    /* Blue divider */
+    hr {
+        border: 1px solid #dbeafe;
+        margin: 2rem 0;
+    }
+    
+    /* Stats cards */
+    .stat-card {
+        background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid #2563eb;
+        text-align: center;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Get languages PROPERLY
+def get_languages():
+    """Get languages with proper names"""
+    try:
+        # Get from GoogleTranslator
+        lang_dict = GoogleTranslator().get_supported_languages(as_dict=True)
+        # Fix the format: we want {'English': 'en', 'Spanish': 'es'}
+        languages = {}
+        for code, name in lang_dict.items():
+            # Capitalize properly
+            proper_name = name.title()
+            languages[proper_name] = code
+        return dict(sorted(languages.items()))
+    except:
+        # Fallback with proper names
+        return {
+            'Arabic': 'ar',
+            'Chinese': 'zh-cn',
+            'English': 'en',
+            'French': 'fr',
+            'German': 'de',
+            'Hindi': 'hi',
+            'Italian': 'it',
+            'Japanese': 'ja',
+            'Korean': 'ko',
+            'Portuguese': 'pt',
+            'Russian': 'ru',
+            'Spanish': 'es',
+            'Turkish': 'tr',
+            'Vietnamese': 'vi'
+        }
+
+# Load languages
+LANGUAGES = get_languages()
 
 def translate_text(text, target_lang):
     """Simple translation function"""
     try:
         if not text or not text.strip():
             return "Please enter text to translate."
-        
-        # Check if target language is valid
-        if target_lang not in LANGUAGES.values():
-            return f"Language code '{target_lang}' not supported. Please select a valid language."
         
         # Translate
         translator = GoogleTranslator(source='auto', target=target_lang)
@@ -76,39 +140,40 @@ with col1:
     
     # Show character count
     if input_text:
-        st.caption(f"Characters: {len(input_text)}")
+        st.caption(f"📊 Characters: {len(input_text)}")
 
 with col2:
     # Language selection
     st.subheader("Translate to:")
     
-    # Search box for languages
-    language_search = st.text_input(
-        "Search language:",
-        placeholder="Type to search...",
-        key="search"
-    )
-    
-    # Filter languages based on search
-    if language_search:
-        filtered_langs = {k: v for k, v in LANGUAGES.items() 
-                         if language_search.lower() in k.lower()}
-    else:
-        filtered_langs = LANGUAGES
-    
-    # Language dropdown
+    # Language dropdown with proper names
+    language_names = list(LANGUAGES.keys())
     target_language_name = st.selectbox(
         "Select language:",
-        options=list(filtered_langs.keys()),
-        index=1 if 'Spanish' in filtered_langs else 0,
+        options=language_names,
+        index=language_names.index('Spanish') if 'Spanish' in language_names else 0,
         key="language"
     )
     
     # Get the language code
     target_language_code = LANGUAGES[target_language_name]
+    st.caption(f"Code: {target_language_code}")
+    
+    # Quick translate buttons
+    st.subheader("Quick Translate:")
+    quick_cols = st.columns(3)
+    with quick_cols[0]:
+        if st.button("🇪🇸 ES", use_container_width=True):
+            target_language_name = "Spanish"
+    with quick_cols[1]:
+        if st.button("🇫🇷 FR", use_container_width=True):
+            target_language_name = "French"
+    with quick_cols[2]:
+        if st.button("🇩🇪 DE", use_container_width=True):
+            target_language_name = "German"
     
     # Translate button
-    translate_btn = st.button("Translate", type="primary", use_container_width=True)
+    translate_btn = st.button("🚀 Translate", type="primary", use_container_width=True)
 
 # Divider
 st.markdown("---")
@@ -120,43 +185,59 @@ if translate_btn:
             result = translate_text(input_text, target_language_code)
         
         # Display result
-        st.subheader("Translation:")
-        st.text_area(
+        st.subheader("Translation Result:")
+        
+        # Text area for output
+        output_area = st.text_area(
             "Translated text:",
             value=result,
             height=150,
             key="output"
         )
         
-        # Simple stats (small and clean)
-        col_a, col_b = st.columns(2)
-        with col_a:
+        # Copy button
+        if st.button("📋 Copy to Clipboard"):
+            st.code(result)
+            st.success("Copied to clipboard!")
+        
+        # Simple stats
+        st.markdown("<br>", unsafe_allow_html=True)
+        cols = st.columns(2)
+        with cols[0]:
+            st.markdown('<div class="stat-card">', unsafe_allow_html=True)
             st.metric("Input", f"{len(input_text)} chars")
-        with col_b:
+            st.markdown('</div>', unsafe_allow_html=True)
+        with cols[1]:
+            st.markdown('<div class="stat-card">', unsafe_allow_html=True)
             st.metric("Output", f"{len(result)} chars")
+            st.markdown('</div>', unsafe_allow_html=True)
             
     else:
-        st.warning("Please enter some text to translate.")
+        st.warning("⚠️ Please enter some text to translate.")
 
-# Sidebar info
+# Sidebar
 with st.sidebar:
-    st.header("ℹ️ About")
+    st.header("ℹ️ How to Use")
     st.write("""
-    **How to use:**
-    1. Type text in the box
-    2. Select target language
-    3. Click Translate
+    1. **Type** your text
+    2. **Select** target language
+    3. **Click** Translate button
+    4. **Copy** the result
     
     **Features:**
     - 100+ languages
-    - Auto language detection
-    - Real-time translation
-    - Simple interface
+    - Auto-detection
+    - Copy to clipboard
+    - Quick translate buttons
     
-    **Powered by:**
-    - Google Translate API
-    - Streamlit
+    **Popular Languages:**
+    - Spanish, French, German
+    - Chinese, Japanese, Korean
+    - Arabic, Hindi, Russian
     """)
     
-    # Show supported language count
-    st.info(f"✅ {len(LANGUAGES)} languages supported")
+    st.info(f"✅ {len(LANGUAGES)} languages available")
+
+# Footer
+st.markdown("---")
+st.caption("Built with Streamlit • Powered by Google Translate")
