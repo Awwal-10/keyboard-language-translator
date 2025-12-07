@@ -41,10 +41,6 @@ st.markdown("""
         font-size: 16px;
     }
     
-    .stSelectbox {
-        margin-bottom: 1rem;
-    }
-    
     hr {
         border: 1px solid #dbeafe;
         margin: 2rem 0;
@@ -103,6 +99,12 @@ def translate_text(text, target_lang):
 st.title("🌍 Language Translator")
 st.markdown("Translate text instantly between languages")
 
+# Initialize session state
+if 'last_translation' not in st.session_state:
+    st.session_state.last_translation = None
+if 'show_result' not in st.session_state:
+    st.session_state.show_result = False
+
 # Layout
 col1, col2 = st.columns([3, 1])
 
@@ -112,7 +114,8 @@ with col1:
         "**Enter text to translate:**",
         height=180,
         placeholder="Type or paste your text here...",
-        key="input"
+        key="input",
+        value=""  # Always start empty
     )
     
     if input_text:
@@ -121,7 +124,7 @@ with col1:
 with col2:
     st.subheader("🎯 Translation Settings")
     
-    # Language dropdown only
+    # Language dropdown
     target_language_name = st.selectbox(
         "**Select target language:**",
         options=list(LANGUAGES.keys()),
@@ -134,38 +137,57 @@ with col2:
     
     # Main translate button
     st.markdown("<br>", unsafe_allow_html=True)
-    translate_btn = st.button("🚀 **TRANSLATE NOW**", type="primary", use_container_width=True)
+    translate_clicked = st.button("🚀 **TRANSLATE NOW**", type="primary", use_container_width=True)
+    
+    # Clear button to reset
+    if st.button("🗑️ Clear All", use_container_width=True):
+        st.session_state.show_result = False
+        st.session_state.last_translation = None
+        st.rerun()
 
 # Divider
 st.markdown("---")
 
-# Translation result
-if translate_btn:
+# Handle translation
+if translate_clicked:
     if input_text.strip():
         with st.spinner(f"Translating to {target_language_name}..."):
             result = translate_text(input_text, target_language_code)
         
-        # Display result
-        st.subheader(f"📤 Translation to {target_language_name}")
-        
-        # Output text area
-        st.text_area(
-            "**Translated text:**",
-            value=result,
-            height=180,
-            key="output"
-        )
-        
-        # Copy button
-        if st.button("📋 Copy to Clipboard"):
-            st.code(result, language='text')
-            st.success("Copied to clipboard!")
-        
-        # Simple stats
-        st.caption(f"📊 **Input:** {len(input_text)} characters | **Output:** {len(result)} characters")
-            
+        # Store in session state
+        st.session_state.last_translation = {
+            'text': input_text,
+            'result': result,
+            'language': target_language_name,
+            'code': target_language_code
+        }
+        st.session_state.show_result = True
+        st.rerun()
     else:
         st.warning("⚠️ Please enter some text to translate.")
+
+# Show result if exists
+if st.session_state.show_result and st.session_state.last_translation:
+    trans_data = st.session_state.last_translation
+    
+    # Display result
+    st.subheader(f"📤 Translation to {trans_data['language']}")
+    
+    # Output text area
+    st.text_area(
+        "**Translated text:**",
+        value=trans_data['result'],
+        height=180,
+        key="output"
+    )
+    
+    # Copy button
+    if st.button("📋 Copy to Clipboard", key="copy_btn"):
+        st.code(trans_data['result'], language='text')
+        st.success("Copied to clipboard!")
+    
+    # Simple stats
+    st.caption(f"📊 **Input:** {len(trans_data['text'])} characters | **Output:** {len(trans_data['result'])} characters")
 
 # Sidebar
 with st.sidebar:
@@ -176,12 +198,14 @@ with st.sidebar:
     3. **Click** TRANSLATE NOW button
     4. **Copy** the result if needed
     
+    **Clear translations** with the Clear button
+    
     ### Features:
     - 30+ languages
     - Real-time translation
     - Auto language detection
-    - Simple interface
     - Copy to clipboard
+    - Clear button to reset
     """)
     
     st.info(f"**Languages available:** {len(LANGUAGES)}")
