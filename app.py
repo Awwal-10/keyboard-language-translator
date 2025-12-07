@@ -8,20 +8,17 @@ st.set_page_config(
     layout="centered"
 )
 
-# Add BLUE theme CSS
+# Blue theme CSS
 st.markdown("""
 <style>
-    /* Blue theme */
     .stApp {
         background-color: #f8fafc;
     }
     
-    /* Blue headers */
     h1, h2, h3 {
         color: #1e40af;
     }
     
-    /* Blue buttons */
     .stButton > button {
         background-color: #2563eb;
         color: white;
@@ -29,81 +26,58 @@ st.markdown("""
         padding: 0.5rem 2rem;
         border-radius: 8px;
         font-weight: 600;
-        transition: all 0.3s;
     }
     
-    .stButton > button:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    }
-    
-    /* Blue text areas */
     .stTextArea textarea {
         border: 2px solid #dbeafe;
         border-radius: 10px;
-        background-color: #f8fafc;
     }
     
-    .stTextArea textarea:focus {
-        border-color: #60a5fa;
-        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
-    }
-    
-    /* Blue select box */
-    div[data-baseweb="select"] {
-        border-radius: 10px;
-        border: 2px solid #dbeafe;
-    }
-    
-    /* Blue divider */
     hr {
         border: 1px solid #dbeafe;
         margin: 2rem 0;
     }
     
-    /* Stats cards */
-    .stat-card {
-        background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-        padding: 1rem;
-        border-radius: 10px;
-        border-left: 4px solid #2563eb;
-        text-align: center;
+    /* Better quick buttons */
+    .quick-btn {
+        margin: 5px;
+        width: 100%;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Get languages PROPERLY
+# Get languages with PROPER NAMES
 def get_languages():
-    """Get languages with proper names"""
-    try:
-        # Get from GoogleTranslator
-        lang_dict = GoogleTranslator().get_supported_languages(as_dict=True)
-        # Fix the format: we want {'English': 'en', 'Spanish': 'es'}
-        languages = {}
-        for code, name in lang_dict.items():
-            # Capitalize properly
-            proper_name = name.title()
-            languages[proper_name] = code
-        return dict(sorted(languages.items()))
-    except:
-        # Fallback with proper names
-        return {
-            'Arabic': 'ar',
-            'Chinese': 'zh-cn',
-            'English': 'en',
-            'French': 'fr',
-            'German': 'de',
-            'Hindi': 'hi',
-            'Italian': 'it',
-            'Japanese': 'ja',
-            'Korean': 'ko',
-            'Portuguese': 'pt',
-            'Russian': 'ru',
-            'Spanish': 'es',
-            'Turkish': 'tr',
-            'Vietnamese': 'vi'
-        }
+    """Get languages with actual names"""
+    # Manual list with proper display names
+    languages = {
+        'Arabic': 'ar',
+        'Bengali': 'bn',
+        'Chinese (Simplified)': 'zh-cn',
+        'Chinese (Traditional)': 'zh-tw',
+        'Dutch': 'nl',
+        'English': 'en',
+        'French': 'fr',
+        'German': 'de',
+        'Greek': 'el',
+        'Hebrew': 'he',
+        'Hindi': 'hi',
+        'Italian': 'it',
+        'Japanese': 'ja',
+        'Korean': 'ko',
+        'Persian': 'fa',
+        'Polish': 'pl',
+        'Portuguese': 'pt',
+        'Russian': 'ru',
+        'Spanish': 'es',
+        'Swedish': 'sv',
+        'Thai': 'th',
+        'Turkish': 'tr',
+        'Ukrainian': 'uk',
+        'Urdu': 'ur',
+        'Vietnamese': 'vi'
+    }
+    return dict(sorted(languages.items()))
 
 # Load languages
 LANGUAGES = get_languages()
@@ -114,7 +88,6 @@ def translate_text(text, target_lang):
         if not text or not text.strip():
             return "Please enter text to translate."
         
-        # Translate
         translator = GoogleTranslator(source='auto', target=target_lang)
         result = translator.translate(text)
         return result
@@ -138,7 +111,6 @@ with col1:
         key="input"
     )
     
-    # Show character count
     if input_text:
         st.caption(f"📊 Characters: {len(input_text)}")
 
@@ -146,33 +118,56 @@ with col2:
     # Language selection
     st.subheader("Translate to:")
     
-    # Language dropdown with proper names
-    language_names = list(LANGUAGES.keys())
+    # Language dropdown with PROPER NAMES
     target_language_name = st.selectbox(
         "Select language:",
-        options=language_names,
-        index=language_names.index('Spanish') if 'Spanish' in language_names else 0,
+        options=list(LANGUAGES.keys()),
+        index=list(LANGUAGES.keys()).index('Spanish'),
         key="language"
     )
     
-    # Get the language code
     target_language_code = LANGUAGES[target_language_name]
-    st.caption(f"Code: {target_language_code}")
     
-    # Quick translate buttons
+    # HORIZONTAL Quick translate buttons with FULL NAMES
     st.subheader("Quick Translate:")
-    quick_cols = st.columns(3)
-    with quick_cols[0]:
-        if st.button("🇪🇸 ES", use_container_width=True):
-            target_language_name = "Spanish"
-    with quick_cols[1]:
-        if st.button("🇫🇷 FR", use_container_width=True):
-            target_language_name = "French"
-    with quick_cols[2]:
-        if st.button("🇩🇪 DE", use_container_width=True):
-            target_language_name = "German"
     
-    # Translate button
+    # Create 3 columns for buttons
+    qcol1, qcol2, qcol3 = st.columns(3)
+    
+    with qcol1:
+        if st.button("🇪🇸 Spanish", use_container_width=True, key="btn_es"):
+            target_language_name = "Spanish"
+            target_language_code = LANGUAGES["Spanish"]
+    
+    with qcol2:
+        if st.button("🇫🇷 French", use_container_width=True, key="btn_fr"):
+            target_language_name = "French"
+            target_language_code = LANGUAGES["French"]
+    
+    with qcol3:
+        if st.button("🇩🇪 German", use_container_width=True, key="btn_de"):
+            target_language_name = "German"
+            target_language_code = LANGUAGES["German"]
+    
+    # Add 3 more popular languages
+    qcol4, qcol5, qcol6 = st.columns(3)
+    
+    with qcol4:
+        if st.button("🇮🇹 Italian", use_container_width=True, key="btn_it"):
+            target_language_name = "Italian"
+            target_language_code = LANGUAGES["Italian"]
+    
+    with qcol5:
+        if st.button("🇯🇵 Japanese", use_container_width=True, key="btn_ja"):
+            target_language_name = "Japanese"
+            target_language_code = LANGUAGES["Japanese"]
+    
+    with qcol6:
+        if st.button("🇰🇷 Korean", use_container_width=True, key="btn_ko"):
+            target_language_name = "Korean"
+            target_language_code = LANGUAGES["Korean"]
+    
+    # Main translate button
     translate_btn = st.button("🚀 Translate", type="primary", use_container_width=True)
 
 # Divider
@@ -185,9 +180,9 @@ if translate_btn:
             result = translate_text(input_text, target_language_code)
         
         # Display result
-        st.subheader("Translation Result:")
+        st.subheader(f"Translation to {target_language_name}:")
         
-        # Text area for output
+        # Output text area
         output_area = st.text_area(
             "Translated text:",
             value=result,
@@ -200,17 +195,12 @@ if translate_btn:
             st.code(result)
             st.success("Copied to clipboard!")
         
-        # Simple stats
-        st.markdown("<br>", unsafe_allow_html=True)
-        cols = st.columns(2)
-        with cols[0]:
-            st.markdown('<div class="stat-card">', unsafe_allow_html=True)
-            st.metric("Input", f"{len(input_text)} chars")
-            st.markdown('</div>', unsafe_allow_html=True)
-        with cols[1]:
-            st.markdown('<div class="stat-card">', unsafe_allow_html=True)
-            st.metric("Output", f"{len(result)} chars")
-            st.markdown('</div>', unsafe_allow_html=True)
+        # Simple stats in columns
+        col_stat1, col_stat2 = st.columns(2)
+        with col_stat1:
+            st.metric("Input Length", f"{len(input_text)} chars")
+        with col_stat2:
+            st.metric("Output Length", f"{len(result)} chars")
             
     else:
         st.warning("⚠️ Please enter some text to translate.")
@@ -219,21 +209,15 @@ if translate_btn:
 with st.sidebar:
     st.header("ℹ️ How to Use")
     st.write("""
-    1. **Type** your text
-    2. **Select** target language
-    3. **Click** Translate button
-    4. **Copy** the result
+    1. **Type** your text in the box
+    2. **Select** target language from dropdown
+    **OR** click a quick language button
+    3. **Click** Translate
+    4. **Copy** the result if needed
     
-    **Features:**
-    - 100+ languages
-    - Auto-detection
-    - Copy to clipboard
-    - Quick translate buttons
-    
-    **Popular Languages:**
+    **Quick Languages Available:**
     - Spanish, French, German
-    - Chinese, Japanese, Korean
-    - Arabic, Hindi, Russian
+    - Italian, Japanese, Korean
     """)
     
     st.info(f"✅ {len(LANGUAGES)} languages available")
