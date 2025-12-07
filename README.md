@@ -32,4 +32,4 @@ This project solves the problem of quick, accessible language translation withou
 
 📱 Live Demo
 
-Try it here: [[Keyboard Language Translator](https://keyboard-language-translator.streamlit.app/)]
+Try it here: [Keyboard Language Translator](https://keyboard-language-translator.streamlit.app/)
