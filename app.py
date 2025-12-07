@@ -161,8 +161,11 @@ def translate_text(text, target_lang, source_lang='auto'):
         
         # Detect source language
         if source_lang == 'auto':
-            detected_lang = GoogleTranslator().detect(text)
-            return translated, detected_lang
+            try:
+                detected_lang = GoogleTranslator().detect(text)
+                return translated, detected_lang
+            except:
+                return translated, "auto"
         return translated, source_lang
     
     except Exception as e:
@@ -234,7 +237,7 @@ def main():
         target_lang_name = st.selectbox(
             "Select target language:",
             options=list(LANGUAGES.keys()),
-            index=list(LANGUAGS.keys()).index('Spanish'),
+            index=list(LANGUAGES.keys()).index('Spanish'),  # FIXED TYPO HERE
             key="target_lang"
         )
         target_lang_code = LANGUAGES[target_lang_name]
@@ -282,7 +285,10 @@ def main():
                 st.success("✅ Translation Complete!")
             with col_b:
                 if detected_lang != 'auto':
-                    st.info(f"Detected language: **{detected_lang}**")
+                    # Try to get the language name from the code
+                    lang_name = [name for name, code in LANGUAGES.items() if code == detected_lang]
+                    if lang_name:
+                        st.info(f"Detected language: **{lang_name[0]}**")
             
             # Display translated text
             st.text_area(
@@ -308,7 +314,14 @@ def main():
             
             with col3:
                 st.markdown('<div class="stat-box">', unsafe_allow_html=True)
-                st.metric("Source", detected_lang if detected_lang != 'auto' else "Auto-detected")
+                if detected_lang != 'auto':
+                    lang_name = [name for name, code in LANGUAGES.items() if code == detected_lang]
+                    if lang_name:
+                        st.metric("Source", lang_name[0])
+                    else:
+                        st.metric("Source", "Auto-detected")
+                else:
+                    st.metric("Source", "Auto-detected")
                 st.markdown('</div>', unsafe_allow_html=True)
             
             with col4:
@@ -344,16 +357,13 @@ def main():
         - Copy to clipboard
         - Translation statistics
         - Mobile-friendly design
-        
-        ### 📊 Supported Languages
-        Full list of all 100+ languages available
         """)
         
         # Show sample languages
         st.subheader("🌐 Popular Languages")
         popular_langs = [
             "Spanish", "French", "German", "Japanese",
-            "Chinese", "Arabic", "Hindi", "Portuguese"
+            "Chinese (Simplified)", "Arabic", "Hindi", "Portuguese"
         ]
         
         for lang in popular_langs:
@@ -369,6 +379,8 @@ def main():
         - **Streamlit** for web interface
         - **Deep Translator** library
         
+        ### 📞 Support
+        Issues? Report on GitHub
         
         ⭐ **Star on GitHub if you like it!**
         """)
