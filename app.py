@@ -5,7 +5,7 @@ from deep_translator import GoogleTranslator
 st.set_page_config(
     page_title="Language Translator",
     page_icon="🌍",
-    layout="wide"  # Changed to wide for better spacing
+    layout="centered"
 )
 
 # Clean CSS
@@ -25,29 +25,14 @@ st.markdown("""
         background-color: #2563eb;
         color: white;
         border: none;
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 2rem;
         border-radius: 8px;
-        font-weight: 500;
-        margin: 2px;
-        white-space: nowrap;
+        font-weight: 600;
+        width: 100%;
     }
     
     .stButton > button:hover {
         background-color: #1d4ed8;
-    }
-    
-    /* Make quick buttons wrap properly */
-    .quick-buttons-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        margin: 10px 0;
-    }
-    
-    /* Force quick buttons to show full text */
-    .quick-button {
-        min-width: 100px;
-        flex: 1;
     }
     
     .stTextArea textarea {
@@ -55,10 +40,19 @@ st.markdown("""
         border-radius: 10px;
         font-size: 16px;
     }
+    
+    .stSelectbox {
+        margin-bottom: 1rem;
+    }
+    
+    hr {
+        border: 1px solid #dbeafe;
+        margin: 2rem 0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Languages with FULL NAMES (truncated versions removed)
+# Languages
 LANGUAGES = {
     'Arabic': 'ar',
     'Bengali': 'bn',
@@ -109,8 +103,8 @@ def translate_text(text, target_lang):
 st.title("🌍 Language Translator")
 st.markdown("Translate text instantly between languages")
 
-# Main layout with more space
-col1, col2 = st.columns([7, 3])
+# Layout
+col1, col2 = st.columns([3, 1])
 
 with col1:
     # Input text
@@ -125,11 +119,11 @@ with col1:
         st.caption(f"📊 **Characters:** {len(input_text)}")
 
 with col2:
-    st.subheader("🎯 Target Language")
+    st.subheader("🎯 Translation Settings")
     
-    # Language dropdown
+    # Language dropdown only
     target_language_name = st.selectbox(
-        "Select from all languages:",
+        "**Select target language:**",
         options=list(LANGUAGES.keys()),
         index=list(LANGUAGES.keys()).index('Spanish'),
         key="language_select"
@@ -137,56 +131,6 @@ with col2:
     
     target_language_code = LANGUAGES[target_language_name]
     st.caption(f"Language code: `{target_language_code}`")
-    
-    # --- QUICK TRANSLATE BUTTONS ---
-    st.subheader("⚡ Quick Select")
-    st.write("Click any button below:")
-    
-    # Create TWO ROWS of quick buttons
-    # First row
-    qrow1 = st.columns(4)
-    with qrow1[0]:
-        if st.button("🇪🇸 Spanish", use_container_width=True, key="btn_es"):
-            target_language_name = "Spanish"
-    with qrow1[1]:
-        if st.button("🇫🇷 French", use_container_width=True, key="btn_fr"):
-            target_language_name = "French"
-    with qrow1[2]:
-        if st.button("🇩🇪 German", use_container_width=True, key="btn_de"):
-            target_language_name = "German"
-    with qrow1[3]:
-        if st.button("🇮🇹 Italian", use_container_width=True, key="btn_it"):
-            target_language_name = "Italian"
-    
-    # Second row
-    qrow2 = st.columns(4)
-    with qrow2[0]:
-        if st.button("🇯🇵 Japanese", use_container_width=True, key="btn_ja"):
-            target_language_name = "Japanese"
-    with qrow2[1]:
-        if st.button("🇰🇷 Korean", use_container_width=True, key="btn_ko"):
-            target_language_name = "Korean"
-    with qrow2[2]:
-        if st.button("🇷🇺 Russian", use_container_width=True, key="btn_ru"):
-            target_language_name = "Russian"
-    with qrow2[3]:
-        if st.button("🇵🇹 Portuguese", use_container_width=True, key="btn_pt"):
-            target_language_name = "Portuguese"
-    
-    # Third row
-    qrow3 = st.columns(4)
-    with qrow3[0]:
-        if st.button("🇳🇱 Dutch", use_container_width=True, key="btn_nl"):
-            target_language_name = "Dutch"
-    with qrow3[1]:
-        if st.button("🇹🇷 Turkish", use_container_width=True, key="btn_tr"):
-            target_language_name = "Turkish"
-    with qrow3[2]:
-        if st.button("🇸🇪 Swedish", use_container_width=True, key="btn_sv"):
-            target_language_name = "Swedish"
-    with qrow3[3]:
-        if st.button("🇵🇱 Polish", use_container_width=True, key="btn_pl"):
-            target_language_name = "Polish"
     
     # Main translate button
     st.markdown("<br>", unsafe_allow_html=True)
@@ -198,9 +142,6 @@ st.markdown("---")
 # Translation result
 if translate_btn:
     if input_text.strip():
-        # Update code based on selected language
-        target_language_code = LANGUAGES[target_language_name]
-        
         with st.spinner(f"Translating to {target_language_name}..."):
             result = translate_text(input_text, target_language_code)
         
@@ -215,41 +156,32 @@ if translate_btn:
             key="output"
         )
         
-        # Action buttons
-        col_copy, col_stats = st.columns([1, 3])
-        with col_copy:
-            if st.button("📋 Copy Translation"):
-                st.code(result, language='text')
-                st.success("Copied!")
+        # Copy button
+        if st.button("📋 Copy to Clipboard"):
+            st.code(result, language='text')
+            st.success("Copied to clipboard!")
         
-        # Simple inline stats
-        st.caption(f"📊 **Stats:** Input: {len(input_text)} chars → Output: {len(result)} chars")
+        # Simple stats
+        st.caption(f"📊 **Input:** {len(input_text)} characters | **Output:** {len(result)} characters")
             
     else:
         st.warning("⚠️ Please enter some text to translate.")
 
 # Sidebar
 with st.sidebar:
-    st.header("ℹ️ About This Tool")
+    st.header("ℹ️ How to Use")
     st.markdown("""
-    ### How to Use:
-    1. **Type** your text
-    2. **Pick** a language:
-       - Use dropdown for all languages
-       - OR click quick buttons
-    3. **Click** TRANSLATE NOW
-    4. **Copy** if needed
-    
-    ### Quick Languages:
-    🇪🇸 🇫🇷 🇩🇪 🇮🇹  
-    🇯🇵 🇰🇷 🇷🇺 🇵🇹  
-    🇳🇱 🇹🇷 🇸🇪 🇵🇱
+    1. **Type** your text in the box
+    2. **Select** target language from dropdown
+    3. **Click** TRANSLATE NOW button
+    4. **Copy** the result if needed
     
     ### Features:
-    - Real-time translation
     - 30+ languages
+    - Real-time translation
     - Auto language detection
-    - Clean interface
+    - Simple interface
+    - Copy to clipboard
     """)
     
     st.info(f"**Languages available:** {len(LANGUAGES)}")
