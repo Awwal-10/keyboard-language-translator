@@ -1,35 +1,74 @@
-🌐 Keyboard-Based Language Translator
+# 🌍 Language Translator
 
-A real-time language translation web application built with Python and Streamlit. This tool allows users to instantly translate text between multiple languages with a clean, intuitive interface.
+A professional real-time language translation web application built with Python and Streamlit.
 
-📋 Project Overview
+![Status](https://img.shields.io/badge/Status-Live-brightgreen) ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 
-This project solves the problem of quick, accessible language translation without requiring complex software installations. It's particularly useful for:
+## 🚀 Live Demo
 
-- Travelers needing quick translations
-- Students learning new languages
-- Professionals working with international content
-- Anyone needing instant text translation
+**[Try it here →](https://keyboard-language-translator.streamlit.app/)**
 
-🚀 Features
+## ✨ Features
 
-- **100+ Languages**: Translate between 103 languages including Spanish, French, German, Chinese, Arabic, and more
-- **Real-time Translation**: Get translations instantly as you type
-- **Modern UI**: Clean, professional interface with gradient designs
-- **Auto Language Detection**: Automatically detects the input language
-- **Character Counter**: Track your text length with visual progress bar
-- **Quick Translate Buttons**: One-click buttons for popular languages
-- **Copy to Clipboard**: Easily copy translations for sharing
-- **Mobile Friendly**: Works perfectly on phones, tablets, and desktops
+- **60+ Languages** - Comprehensive language support
+- **Real-time Translation** - Instant results
+- **Auto Detection** - Automatically detects source language
+- **Character Counter** - Track text length
+- **Copy to Clipboard** - Easy copying
+- **Clean UI** - Professional blue theme
+- **Mobile Responsive** - Works on all devices
 
-🔧 How to Use
+## 🎯 How to Use
 
-1. Type or paste text in the input box
-2. Select your target language from the dropdown (or use quick buttons)
+1. Enter your text in the input box
+2. Select target language from dropdown
 3. Click "TRANSLATE NOW"
-4. View your translated text instantly
-5. Copy or share as needed
+4. Copy the result
 
-📱 Live Demo
+## 🛠️ Installation
+```bash
+# Clone repository
+git clone https://github.com/yourusername/keyboard-language-translator.git
+cd keyboard-language-translator
 
-Try it here: [Keyboard Language Translator](https://keyboard-language-translator.streamlit.app/)
+# Install dependencies
+pip install -r requirements.txt
+
+# Run app
+streamlit run app.py
+```
+
+## 📦 Dependencies
+```
+streamlit>=1.28.0
+deep-translator>=1.11.0
+```
+
+## 🌐 Deployment
+
+Deployed on Streamlit Cloud. Updates automatically on git push.
+
+## 🐛 Bug Fixes (v2.0)
+
+- ✅ Fixed state persistence issues
+- ✅ Fixed language display (shows names not codes)
+- ✅ Added proper error handling
+- ✅ Improved UI consistency
+- ✅ Added clear/reset functionality
+
+## 📄 License
+
+MIT License
+
+## 👤 Author
+
+Your Name
+- GitHub: [Awwal-Github](https://github.com/Awwal-10)
+- LinkedIn: [Awwal-Linkdin](https://www.linkedin.com/in/awwal-ahmed10/)
+
+---
+
+**Made with ❤️ using Python and Streamlit**
+```
+
+---
