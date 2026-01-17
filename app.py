@@ -408,14 +408,17 @@ if translate_clicked:
         st.warning("Please enter text to translate")
 
 # Auto-clear translation if language or input changes
+current_target = target_language_name
+current_input = input_text or ""
+
+# Clear if language changed OR input is different from what was last translated
 if st.session_state.translation_result:
-    current_target = target_language_name
-    current_input = input_text or ""
-    
-    # Clear if language changed or input text is different (even if contains previous text)
     if (st.session_state.last_target_lang != current_target or 
         st.session_state.last_input_text != current_input):
         st.session_state.translation_result = ""
+        st.session_state.last_target_lang = ""
+        st.session_state.last_input_text = ""
+        st.rerun()
 
 # Display result
 if st.session_state.translation_result:
