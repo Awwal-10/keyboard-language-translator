@@ -112,7 +112,6 @@ st.markdown("""
         border: 1px solid #334155 !important;
         border-radius: 8px !important;
         min-height: 48px !important;
-        color: #e2e8f0 !important;
         transition: border-color 0.2s ease !important;
     }
     
@@ -126,6 +125,30 @@ st.markdown("""
     
     div[data-baseweb="select"] span {
         color: #e2e8f0 !important;
+    }
+    
+    div[data-baseweb="select"] input {
+        color: #e2e8f0 !important;
+    }
+    
+    /* Dropdown menu */
+    ul[role="listbox"] {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+    }
+    
+    ul[role="listbox"] li {
+        color: #e2e8f0 !important;
+        background: #1e293b !important;
+    }
+    
+    ul[role="listbox"] li:hover {
+        background: #334155 !important;
+    }
+    
+    ul[role="listbox"] li[aria-selected="true"] {
+        background: #3b82f6 !important;
+        color: #ffffff !important;
     }
     
     /* Buttons */
@@ -220,6 +243,17 @@ st.markdown("""
         border: 1px solid #334155 !important;
         color: #e2e8f0 !important;
         border-radius: 8px !important;
+    }
+    
+    /* Fix all text colors */
+    p, label, div {
+        color: #e2e8f0;
+    }
+    
+    /* Streamlit labels */
+    .stSelectbox label,
+    .stTextArea label {
+        color: #94a3b8 !important;
     }
 </style>
 """, unsafe_allow_html=True)
