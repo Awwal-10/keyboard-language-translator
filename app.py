@@ -392,6 +392,17 @@ st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 st.markdown('<div class="card-section">', unsafe_allow_html=True)
 st.markdown('<div class="section-label">Translation</div>', unsafe_allow_html=True)
 
+# Auto-clear translation if language or input changes (BEFORE handling translate button)
+current_target = target_language_name
+current_input = input_text or ""
+
+if st.session_state.translation_result:
+    if (st.session_state.last_target_lang != current_target or 
+        st.session_state.last_input_text != current_input):
+        st.session_state.translation_result = ""
+        st.session_state.last_target_lang = ""
+        st.session_state.last_input_text = ""
+
 # Handle translation
 if translate_clicked:
     if input_text and input_text.strip():
@@ -406,19 +417,6 @@ if translate_clicked:
         st.rerun()
     else:
         st.warning("Please enter text to translate")
-
-# Auto-clear translation if language or input changes
-current_target = target_language_name
-current_input = input_text or ""
-
-# Clear if language changed OR input is different from what was last translated
-if st.session_state.translation_result:
-    if (st.session_state.last_target_lang != current_target or 
-        st.session_state.last_input_text != current_input):
-        st.session_state.translation_result = ""
-        st.session_state.last_target_lang = ""
-        st.session_state.last_input_text = ""
-        st.rerun()
 
 # Display result
 if st.session_state.translation_result:
