@@ -354,7 +354,8 @@ with col_select:
         "Search language",
         placeholder="Search languages...",
         label_visibility="collapsed",
-        key="lang_search"
+        key="lang_search",
+        value=""
     )
     
     # Filter languages based on search
@@ -365,8 +366,10 @@ with col_select:
     else:
         filtered_langs = sorted_langs
     
-    # Set default index
-    if "Spanish" in filtered_langs:
+    # Set default index based on what's in session state or default to Spanish
+    if st.session_state.get("last_target_lang") and st.session_state.last_target_lang in filtered_langs:
+        default_index = filtered_langs.index(st.session_state.last_target_lang)
+    elif "Spanish" in filtered_langs:
         default_index = filtered_langs.index("Spanish")
     else:
         default_index = 0
@@ -410,16 +413,19 @@ if translate_clicked:
 # Determine if we should show the cached translation
 current_input = input_text if input_text else ""
 current_target = target_language_name
-show_translation = False
 
-# Only show translation if BOTH input and target language are EXACTLY the same
-if (st.session_state.translation_result and 
-    st.session_state.get("last_input_text") and 
-    st.session_state.get("last_target_lang")):
-    
-    if (current_input == st.session_state.last_input_text and 
-        current_target == st.session_state.last_target_lang):
-        show_translation = True
+# Debug: Check what's stored vs what's current
+stored_input = st.session_state.get("last_input_text", "")
+stored_lang = st.session_state.get("last_target_lang", "")
+
+# Only show translation if EVERYTHING matches exactly
+show_translation = (
+    st.session_state.translation_result and 
+    stored_input and 
+    stored_lang and
+    current_input == stored_input and 
+    current_target == stored_lang
+)
 
 # Display result
 if show_translation and st.session_state.translation_result:
