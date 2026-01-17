@@ -229,39 +229,15 @@ st.markdown("""
         font-weight: 500;
     }
     
-    /* Metrics - force white text */
-    div[data-testid="stMetricValue"] {
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-        color: #ffffff !important;
-    }
-    
-    div[data-testid="stMetricValue"] div {
-        color: #ffffff !important;
-    }
-    
-    div[data-testid="stMetricValue"] label {
-        color: #ffffff !important;
-    }
-    
-    div[data-testid="stMetricLabel"] {
-        font-size: 0.75rem !important;
-        color: #94a3b8 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
-    }
-    
-    div[data-testid="stMetricLabel"] div {
-        color: #94a3b8 !important;
-    }
-    
-    div[data-testid="stMetricLabel"] label {
-        color: #94a3b8 !important;
-    }
-    
-    /* Remove metric delta */
-    div[data-testid="stMetricDelta"] {
-        display: none !important;
+    /* Warning box */
+    .warning-box {
+        background: #422006 !important;
+        border: 1px solid #78350f !important;
+        color: #fef3c7 !important;
+        padding: 1rem !important;
+        border-radius: 8px !important;
+        margin: 1rem 0 !important;
+        font-size: 0.9rem !important;
     }
     
     /* Spinner */
@@ -304,14 +280,14 @@ def translate_text(text: str, target_lang: str) -> str:
         return f"Translation error: {str(e)}"
 
 # ==================== SESSION STATE ====================
-if "translation_result" not in st.session_state:
-    st.session_state.translation_result = ""
+if "translated_text" not in st.session_state:
+    st.session_state.translated_text = ""
+if "translated_from_input" not in st.session_state:
+    st.session_state.translated_from_input = ""
+if "translated_to_lang" not in st.session_state:
+    st.session_state.translated_to_lang = ""
 if "translation_count" not in st.session_state:
     st.session_state.translation_count = 0
-if "last_target_lang" not in st.session_state:
-    st.session_state.last_target_lang = ""
-if "last_input_text" not in st.session_state:
-    st.session_state.last_input_text = ""
 
 # ==================== HEADER ====================
 st.markdown("""
@@ -354,8 +330,7 @@ with col_select:
         "Search language",
         placeholder="Search languages...",
         label_visibility="collapsed",
-        key="lang_search",
-        value=""
+        key="lang_search"
     )
     
     # Filter languages based on search
@@ -366,10 +341,8 @@ with col_select:
     else:
         filtered_langs = sorted_langs
     
-    # Set default index based on what's in session state or default to Spanish
-    if st.session_state.get("last_target_lang") and st.session_state.last_target_lang in filtered_langs:
-        default_index = filtered_langs.index(st.session_state.last_target_lang)
-    elif "Spanish" in filtered_langs:
+    # Set default index
+    if "Spanish" in filtered_langs:
         default_index = filtered_langs.index("Spanish")
     else:
         default_index = 0
@@ -395,50 +368,69 @@ st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 st.markdown('<div class="card-section">', unsafe_allow_html=True)
 st.markdown('<div class="section-label">Translation</div>', unsafe_allow_html=True)
 
-# Handle translation
+# Handle translation button click
 if translate_clicked:
     if input_text and input_text.strip():
         target_code = LANGUAGES[target_language_name]
         with st.spinner("Translating..."):
             time.sleep(0.3)
             result = translate_text(input_text, target_code)
-        # Store the EXACT input and language used for translation
-        st.session_state.translation_result = result
-        st.session_state.last_target_lang = target_language_name
-        st.session_state.last_input_text = input_text  # Store exact input
+        
+        # Save the translation with metadata
+        st.session_state.translated_text = result
+        st.session_state.translated_from_input = input_text
+        st.session_state.translated_to_lang = target_language_name
         st.session_state.translation_count += 1
     else:
         st.warning("Please enter text to translate")
 
-# Determine if we should show the cached translation
-current_input = input_text if input_text else ""
-current_target = target_language_name
+# Check if current input/language matches what was translated
+current_input = input_text or ""
+current_lang = target_language_name
 
-# Debug: Check what's stored vs what's current
-stored_input = st.session_state.get("last_input_text", "")
-stored_lang = st.session_state.get("last_target_lang", "")
+input_matches = (current_input == st.session_state.translated_from_input)
+lang_matches = (current_lang == st.session_state.translated_to_lang)
 
-# Only show translation if EVERYTHING matches exactly
-show_translation = (
-    st.session_state.translation_result and 
-    stored_input and 
-    stored_lang and
-    current_input == stored_input and 
-    current_target == stored_lang
-)
-
-# Display result
-if show_translation and st.session_state.translation_result:
+# Determine what to show
+if st.session_state.translated_text and input_matches and lang_matches:
+    # Show the translation - everything matches
     st.text_area(
         "Translation result",
-        value=st.session_state.translation_result,
+        value=st.session_state.translated_text,
         height=200,
         label_visibility="collapsed",
         key="output_text"
     )
+    st.markdown(f'<div class="info-text">Translated to <span class="info-highlight">{st.session_state.translated_to_lang}</span></div>', unsafe_allow_html=True)
     
-    st.markdown(f'<div class="info-text">Translated to <span class="info-highlight">{st.session_state.last_target_lang}</span></div>', unsafe_allow_html=True)
+elif st.session_state.translated_text and not input_matches:
+    # Input changed - show warning
+    st.text_area(
+        "Translation result",
+        value="",
+        height=200,
+        placeholder="Input text has changed. Click Translate to get new translation...",
+        label_visibility="collapsed",
+        key="output_empty_input",
+        disabled=True
+    )
+    st.markdown('<div class="warning-box">⚠️ Input text changed. Click Translate for new translation.</div>', unsafe_allow_html=True)
+    
+elif st.session_state.translated_text and not lang_matches:
+    # Language changed - show warning
+    st.text_area(
+        "Translation result",
+        value="",
+        height=200,
+        placeholder="Target language has changed. Click Translate to get new translation...",
+        label_visibility="collapsed",
+        key="output_empty_lang",
+        disabled=True
+    )
+    st.markdown('<div class="warning-box">⚠️ Target language changed. Click Translate for new translation.</div>', unsafe_allow_html=True)
+    
 else:
+    # No translation yet or cleared
     st.text_area(
         "Translation result",
         value="",
@@ -453,6 +445,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Session stats (only show if translations have been made)
+# Session stats
 if st.session_state.translation_count > 0:
     st.markdown(f'<div class="info-text" style="text-align: center; margin-top: 1.5rem;">Session: <span class="info-highlight">{st.session_state.translation_count}</span> translation{"s" if st.session_state.translation_count != 1 else ""} completed</div>', unsafe_allow_html=True)
