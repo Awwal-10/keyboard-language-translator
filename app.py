@@ -92,6 +92,26 @@ st.markdown("""
         font-weight: 600;
     }
     
+    /* Text inputs */
+    .stTextInput input {
+        background: #0f172a !important;
+        border: 1px solid #334155 !important;
+        border-radius: 8px !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        padding: 0.75rem !important;
+        transition: border-color 0.2s ease !important;
+    }
+    
+    .stTextInput input:focus {
+        border-color: #3b82f6 !important;
+        outline: none !important;
+    }
+    
+    .stTextInput input::placeholder {
+        color: #64748b !important;
+    }
+    
     /* Text areas - force white text */
     .stTextArea textarea {
         background: #0f172a !important;
@@ -328,10 +348,32 @@ col_select, col_button = st.columns([3, 1])
 
 with col_select:
     st.markdown('<div class="section-label">Target Language</div>', unsafe_allow_html=True)
-    default_index = sorted_langs.index("Spanish") if "Spanish" in sorted_langs else 0
+    
+    # Search box for languages
+    search_term = st.text_input(
+        "Search language",
+        placeholder="Search languages...",
+        label_visibility="collapsed",
+        key="lang_search"
+    )
+    
+    # Filter languages based on search
+    if search_term:
+        filtered_langs = [lang for lang in sorted_langs if search_term.lower() in lang.lower()]
+        if not filtered_langs:
+            filtered_langs = sorted_langs
+    else:
+        filtered_langs = sorted_langs
+    
+    # Set default index
+    if "Spanish" in filtered_langs:
+        default_index = filtered_langs.index("Spanish")
+    else:
+        default_index = 0
+    
     target_language_name = st.selectbox(
         "Target language",
-        options=sorted_langs,
+        options=filtered_langs,
         index=default_index,
         label_visibility="collapsed",
         key="target_lang"
@@ -370,12 +412,10 @@ if st.session_state.translation_result:
     current_target = target_language_name
     current_input = input_text or ""
     
-    # Clear if language changed or input changed
+    # Clear if language changed or input text is different (even if contains previous text)
     if (st.session_state.last_target_lang != current_target or 
         st.session_state.last_input_text != current_input):
         st.session_state.translation_result = ""
-        st.session_state.last_target_lang = ""
-        st.session_state.last_input_text = ""
 
 # Display result
 if st.session_state.translation_result:
