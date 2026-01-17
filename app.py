@@ -288,6 +288,10 @@ if "translation_result" not in st.session_state:
     st.session_state.translation_result = ""
 if "translation_count" not in st.session_state:
     st.session_state.translation_count = 0
+if "last_target_lang" not in st.session_state:
+    st.session_state.last_target_lang = ""
+if "last_input_text" not in st.session_state:
+    st.session_state.last_input_text = ""
 
 # ==================== HEADER ====================
 st.markdown("""
@@ -311,16 +315,6 @@ input_text = st.text_area(
     label_visibility="collapsed",
     key="input_text"
 )
-
-if input_text:
-    char_count = len(input_text)
-    word_count = len(input_text.split())
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Characters", f"{char_count:,}")
-    with col2:
-        st.metric("Words", f"{word_count:,}")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -364,10 +358,24 @@ if translate_clicked:
             time.sleep(0.3)
             result = translate_text(input_text, target_code)
         st.session_state.translation_result = result
+        st.session_state.last_target_lang = target_language_name
+        st.session_state.last_input_text = input_text
         st.session_state.translation_count += 1
         st.rerun()
     else:
         st.warning("Please enter text to translate")
+
+# Auto-clear translation if language or input changes
+if st.session_state.translation_result:
+    current_target = target_language_name
+    current_input = input_text or ""
+    
+    # Clear if language changed or input changed
+    if (st.session_state.last_target_lang != current_target or 
+        st.session_state.last_input_text != current_input):
+        st.session_state.translation_result = ""
+        st.session_state.last_target_lang = ""
+        st.session_state.last_input_text = ""
 
 # Display result
 if st.session_state.translation_result:
@@ -379,8 +387,7 @@ if st.session_state.translation_result:
         key="output_text"
     )
     
-    result_chars = len(st.session_state.translation_result)
-    st.markdown(f'<div class="info-text">Output: <span class="info-highlight">{result_chars:,} characters</span> • Translated to <span class="info-highlight">{target_language_name}</span></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="info-text">Translated to <span class="info-highlight">{st.session_state.last_target_lang}</span></div>', unsafe_allow_html=True)
 else:
     st.text_area(
         "Translation result",
