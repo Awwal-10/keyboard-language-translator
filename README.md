@@ -51,7 +51,7 @@ Deployed on Streamlit Cloud. Updates automatically on git push.
 MIT License
 
 ## Author
-- Name: Awwal Ahmed
+- Name: [Awwal Ahmed](https://bit.ly/AwwalStudentPage)
 - GitHub: [Awwal-Github](https://github.com/Awwal-10)
 - LinkedIn: [Awwal-Linkdin](https://www.linkedin.com/in/awwal-ahmed10/)
 
