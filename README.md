@@ -38,14 +38,6 @@ deep-translator>=1.11.0
 
 Deployed on Streamlit Cloud. Updates automatically on git push.
 
-## Bug Fixes (v2.0)
-
-- ✅ Fixed state persistence issues
-- ✅ Fixed language display (shows names not codes)
-- ✅ Added proper error handling
-- ✅ Improved UI consistency
-- ✅ Added clear/reset functionality
-
 ## License
 
 MIT License
