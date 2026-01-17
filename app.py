@@ -399,22 +399,26 @@ if translate_clicked:
         with st.spinner("Translating..."):
             time.sleep(0.3)
             result = translate_text(input_text, target_code)
+        # Store the EXACT input and language used for translation
         st.session_state.translation_result = result
         st.session_state.last_target_lang = target_language_name
-        st.session_state.last_input_text = input_text
+        st.session_state.last_input_text = input_text  # Store exact input
         st.session_state.translation_count += 1
     else:
         st.warning("Please enter text to translate")
 
-# Check if input or language changed - if yes, don't show old translation
-current_input = input_text or ""
+# Determine if we should show the cached translation
+current_input = input_text if input_text else ""
 current_target = target_language_name
 show_translation = False
 
-if st.session_state.translation_result:
-    # Only show translation if input and language match what was last translated
-    if (st.session_state.last_input_text == current_input and 
-        st.session_state.last_target_lang == current_target):
+# Only show translation if BOTH input and target language are EXACTLY the same
+if (st.session_state.translation_result and 
+    st.session_state.get("last_input_text") and 
+    st.session_state.get("last_target_lang")):
+    
+    if (current_input == st.session_state.last_input_text and 
+        current_target == st.session_state.last_target_lang):
         show_translation = True
 
 # Display result
