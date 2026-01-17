@@ -15,8 +15,10 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
-    * {
-        font-family: 'Inter', -apple-system, sans-serif;
+    /* Base styles */
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        color: #e2e8f0 !important;
     }
     
     /* Hide Streamlit branding */
@@ -35,6 +37,11 @@ st.markdown("""
         max-width: 1200px;
     }
     
+    /* Force all text to be visible */
+    p, span, div, label, input, textarea, select, h1, h2, h3, h4, h5, h6 {
+        color: #e2e8f0 !important;
+    }
+    
     /* Header */
     .app-header {
         text-align: center;
@@ -46,14 +53,14 @@ st.markdown("""
     .app-logo {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #ffffff;
+        color: #ffffff !important;
         margin-bottom: 0.5rem;
         letter-spacing: -0.03em;
     }
     
     .app-tagline {
         font-size: 1rem;
-        color: #94a3b8;
+        color: #94a3b8 !important;
         font-weight: 400;
     }
     
@@ -80,17 +87,17 @@ st.markdown("""
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.1em;
-        color: #94a3b8;
+        color: #94a3b8 !important;
         margin-bottom: 1rem;
         font-weight: 600;
     }
     
-    /* Text areas */
+    /* Text areas - force white text */
     .stTextArea textarea {
         background: #0f172a !important;
         border: 1px solid #334155 !important;
         border-radius: 8px !important;
-        color: #e2e8f0 !important;
+        color: #ffffff !important;
         font-size: 0.95rem !important;
         padding: 1rem !important;
         line-height: 1.6 !important;
@@ -103,10 +110,14 @@ st.markdown("""
     }
     
     .stTextArea textarea::placeholder {
-        color: #475569 !important;
+        color: #64748b !important;
     }
     
-    /* Select boxes */
+    .stTextArea textarea:disabled {
+        opacity: 0.5;
+    }
+    
+    /* Select boxes - force white text */
     div[data-baseweb="select"] > div {
         background: #0f172a !important;
         border: 1px solid #334155 !important;
@@ -123,12 +134,20 @@ st.markdown("""
         border-color: #3b82f6 !important;
     }
     
+    div[data-baseweb="select"] div {
+        color: #ffffff !important;
+    }
+    
     div[data-baseweb="select"] span {
-        color: #e2e8f0 !important;
+        color: #ffffff !important;
     }
     
     div[data-baseweb="select"] input {
-        color: #e2e8f0 !important;
+        color: #ffffff !important;
+    }
+    
+    div[data-baseweb="select"] svg {
+        fill: #94a3b8 !important;
     }
     
     /* Dropdown menu */
@@ -138,7 +157,7 @@ st.markdown("""
     }
     
     ul[role="listbox"] li {
-        color: #e2e8f0 !important;
+        color: #ffffff !important;
         background: #1e293b !important;
     }
     
@@ -174,60 +193,53 @@ st.markdown("""
         transform: translateY(0) !important;
     }
     
+    .stButton > button p {
+        color: #ffffff !important;
+    }
+    
     /* Info text */
     .info-text {
-        color: #64748b;
+        color: #94a3b8 !important;
         font-size: 0.875rem;
         margin-top: 0.75rem;
     }
     
     .info-highlight {
-        color: #3b82f6;
+        color: #3b82f6 !important;
         font-weight: 500;
     }
     
-    /* Stats row */
-    .stats-row {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #334155;
-    }
-    
-    .stat-item {
-        flex: 1;
-    }
-    
-    .stat-value {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #e2e8f0;
-        margin-bottom: 0.25rem;
-    }
-    
-    .stat-label {
-        font-size: 0.75rem;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    
-    /* Override streamlit metrics */
+    /* Metrics - force white text */
     div[data-testid="stMetricValue"] {
         font-size: 1.5rem !important;
         font-weight: 600 !important;
-        color: #e2e8f0 !important;
+        color: #ffffff !important;
+    }
+    
+    div[data-testid="stMetricValue"] div {
+        color: #ffffff !important;
+    }
+    
+    div[data-testid="stMetricValue"] label {
+        color: #ffffff !important;
     }
     
     div[data-testid="stMetricLabel"] {
         font-size: 0.75rem !important;
-        color: #64748b !important;
+        color: #94a3b8 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
     }
     
-    /* Remove metric delta arrows */
+    div[data-testid="stMetricLabel"] div {
+        color: #94a3b8 !important;
+    }
+    
+    div[data-testid="stMetricLabel"] label {
+        color: #94a3b8 !important;
+    }
+    
+    /* Remove metric delta */
     div[data-testid="stMetricDelta"] {
         display: none !important;
     }
@@ -241,19 +253,15 @@ st.markdown("""
     .stAlert {
         background: #0f172a !important;
         border: 1px solid #334155 !important;
-        color: #e2e8f0 !important;
         border-radius: 8px !important;
     }
     
-    /* Fix all text colors */
-    p, label, div {
-        color: #e2e8f0;
+    .stAlert div {
+        color: #e2e8f0 !important;
     }
     
-    /* Streamlit labels */
-    .stSelectbox label,
-    .stTextArea label {
-        color: #94a3b8 !important;
+    .stAlert p {
+        color: #e2e8f0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
