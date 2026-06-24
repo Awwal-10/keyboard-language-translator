@@ -1,0 +1,53 @@
+# Xcode
+#
+# gitignore contents for Xcode 8 and later
+#
+# Pods/
+# Carthage/Build
+
+## User settings
+xcuserdata/
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code injection
+iOSInjectionProject/
+
+# Build artifacts
+build/
+DerivedData/
+
+# XcodeGen cache (project.yml is the source of truth; .xcodeproj is generated and committed)
+.xcodegen/
+
+# Local signing config (per-developer Team ID) — see Config/Local.xcconfig.example
+Config/Local.xcconfig
+
+# macOS
+.DS_Store

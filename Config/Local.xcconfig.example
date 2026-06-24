@@ -1,0 +1,13 @@
+// Copy this file to Local.xcconfig (same folder) and fill in your own Team ID.
+// Local.xcconfig is gitignored — it's machine/developer-specific and never committed.
+//
+// Find your Team ID in Xcode: Xcode → Settings → Accounts → select your Apple ID → Team.
+// It's a 10-character alphanumeric string, e.g. A1B2C3D4E5.
+//
+// Setting it here (instead of in each target's Signing & Capabilities tab) means
+// `xcodegen generate` will keep applying it to BOTH the TransKey and
+// KeyboardExtension targets every time the project is regenerated, instead of
+// the team being silently wiped out (xcodegen rewrites the whole .xcodeproj
+// from project.yml, so anything set only via Xcode's UI doesn't survive a
+// regenerate unless it's captured in a file like this one).
+DEVELOPMENT_TEAM = YOUR_TEAM_ID

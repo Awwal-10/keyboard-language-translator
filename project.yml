@@ -1,0 +1,72 @@
+name: TransKey
+options:
+  # "com.transkey" is already registered to someone else on Apple's servers —
+  # App IDs are globally unique across ALL developers, not just your team.
+  # Prefixing with your own Team ID guarantees no collision with anyone else's app.
+  bundleIdPrefix: com.ygpx6sq2aa.transkey
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+# Applies Config/Local.xcconfig (gitignored, holds your DEVELOPMENT_TEAM) as the
+# base config for every target, so `xcodegen generate` never wipes out signing.
+configFiles:
+  Debug: Config/Local.xcconfig
+  Release: Config/Local.xcconfig
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  TransKey:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: TransKey
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ygpx6sq2aa.transkey
+        PRODUCT_NAME: TransKey
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: TransKey
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - target: KeyboardExtension
+        embed: true
+        codeSign: true
+
+  KeyboardExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: KeyboardExtension
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ygpx6sq2aa.transkey.KeyboardExtension
+        PRODUCT_NAME: KeyboardExtension
+        INFOPLIST_FILE: KeyboardExtension/Info.plist
+
+schemes:
+  TransKey:
+    build:
+      targets:
+        TransKey: all
+        KeyboardExtension: all
+    run:
+      config: Debug
+    archive:
+      config: Release
